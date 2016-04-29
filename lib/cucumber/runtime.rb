@@ -10,6 +10,7 @@ require 'cucumber/formatter/fanout'
 require 'cucumber/formatter/event_bus_report'
 require 'cucumber/gherkin/i18n'
 require 'cucumber/step_match_search'
+require 'cucumber/suite'
 
 module Cucumber
   module FixRuby21Bug9285
@@ -58,13 +59,18 @@ module Cucumber
 
     require 'cucumber/wire/plugin'
     def run!
+      
       load_step_definitions
       install_wire_plugin
       fire_after_configuration_hook
       self.visitor = report
 
       receiver = Test::Runner.new(report)
-      compile features, receiver, filters
+      suites = [Suite.new]
+      suites.each do |suite|
+        suite.filters.concat filters
+        compile features, receiver, suite.filters
+      end
     end
 
     def features_paths
