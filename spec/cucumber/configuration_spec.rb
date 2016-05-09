@@ -9,6 +9,20 @@ module Cucumber
         expect(subject.autoload_code_paths).to include('features/support')
         expect(subject.autoload_code_paths).to include('features/step_definitions')
       end
+
+      it "can load suites" do
+        subject.suite(:suite1)
+        expect(subject.configured_suites).to include(:suite1)
+      end
+
+      it "can configure suites" do
+        subject.suite(:suite1) do |suite_config|
+          suite_config.filters << "a filter"
+        end
+        test_suite = Suite.new().filters << "a filter"
+        expect(subject.configured_suites).to include(:suite1)
+        expect(subject.configured_suites[:suite1].filters).to include("a filter")
+      end
     end
 
     describe "with custom user options" do
